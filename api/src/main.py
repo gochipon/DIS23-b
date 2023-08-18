@@ -4,10 +4,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
+from pydantic import BaseModel
 
 app = FastAPI()
 
-origins = ["http://localhost:5173"]
+origins = ["http://localhost:50010"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class QueryBody(BaseModel):
+    text:str
 
 @app.get("/")
 def read_root():
@@ -23,13 +26,13 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/query")
-def query(text: str) -> dict:
-    print(text)
+def query(body: QueryBody) -> dict:
+    print(type(body))
     chat = ChatOpenAI(model_name="gpt-3.5-turbo")
-    
+
     result = chat([
         SystemMessage(content="日本語で回答してください。"),
-        HumanMessage(content=text),
+        HumanMessage(content=body.text),
     ])
     print(result)
     return {"output": result.content}
