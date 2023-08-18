@@ -3,12 +3,16 @@ import axios from 'axios';
 
 function App() {
   const queryUrl = "http://127.0.0.1:50050/query"; //後でfast apiのurl
-
+  const suggestUrl = "http://127.0.0.1:50050/suggest";
 
   const [query, setQuery] = useState('');
   const [draft, setDraft] = useState('');
   const [selectedText, setSelectedText] = useState('');
+  const [beforeText, setBeforeText] = useState('');
+  const [afterText, setAfterText] = useState('');
   const [maskedDraft, setMaskedDraft] = useState('');
+  const [suggests, setSuggests] = useState([])
+  const [selectedSuggest, setSelectedSuggest] = useState('');
 
   const handleQuerySubmit = async () => {
     try {
@@ -24,18 +28,36 @@ function App() {
   const handleTextSelection = () => {
     const selection = window.getSelection();
     const text = selection.toString()
-    setSelectedText(text);
 
     if (text.length > 0) {
       const selectionStart = selection.anchorOffset;
       const selectionEnd = selection.focusOffset;
-      const beforeSelection = draft.slice(0, selectionStart);
-      const afterSelection = draft.slice(selectionEnd);
+      const beforeTextTmp = draft.slice(0, selectionStart);
+      const afterTextTmp = draft.slice(selectionEnd);
 
-      setMaskedDraft(beforeSelection + "__" + afterSelection);
+      setSelectedText(text);
+      setBeforeText(beforeTextTmp);
+      setAfterText(afterTextTmp);
+      setMaskedDraft(beforeTextTmp + "__" + afterTextTmp);
     }
   };
 
+  const handleSelectedTextSubmit = async () => {
+    try {
+      const response = await axios.post(suggestUrl, {
+        selected_text: selectedText,
+        draft: maskedDraft,
+        n: 3
+      });
+      setSuggests(response.data.suggest);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleButtonClick = (string) => {
+    setSelectedSuggest(string);
+  };
 
   return (
     <div className="App">
@@ -70,11 +92,21 @@ function App() {
         <p>
           選択しているテキスト: <strong>{selectedText}</strong>
         </p>
-        <p>
-          マスク: <strong>{maskedDraft}</strong>
-        </p>
+        <div>
+          <button onClick={handleSelectedTextSubmit}>送信</button>
+        </div>
 
-
+        <h2>与えられた選択肢</h2>
+        <div>
+          {suggests.map((string, index) => (
+            <button key={index} onClick={() => handleButtonClick(string)}>
+              {string}
+            </button>
+          ))}
+        </div>
+        <div>
+          <p>選択された文字列: {selectedSuggest}</p>
+        </div>
       </header>
     </div>
   );
