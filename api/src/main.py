@@ -92,5 +92,5 @@ def suggest(body: SuggestBody) -> dict:
         suggest_sentence_list[i] = part_draft.replace("__", result_list[i])
     logger.info("suggest_sentence_list:")
     logger.info(suggest_sentence_list)
-    return {"suggest":results, "suggest_sentence": suggest_sentence_list}
+    return {"suggest":results.split(","), "suggest_sentence": suggest_sentence_list}
     
