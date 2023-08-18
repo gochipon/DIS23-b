@@ -38,16 +38,23 @@ def query(text: str) -> dict:
 
 @app.post("/suggest")
 def suggest(selected_text: str="訓練", sentence: str="ITの利活用には、__が必要です。", n:int=3):
+    # 穴埋め問題を解く
     chat = ChatOpenAI(model_name="gpt-3.5-turbo")
     output_parser = CommaSeparatedListOutputParser()
     format_instructions = output_parser.get_format_instructions()
     prompt = PromptTemplate(
-        template="__に入る言葉を{n}個出力してください。{sentence}\n{format_instructions}",
-        input_variables=["n", "sentence"],
+        template="__の部分に{selected_text}に代わる言葉を{n}個出力してください。 {sentence}\n{format_instructions}",
+        input_variables=["n", "sentence", "selected_text"],
         partial_variables={"format_instructions": format_instructions}
     )
     chain = LLMChain(llm=chat, prompt=prompt, )
-    results = chain.run({"n": n, "sentence": sentence})
+    results = chain.run({"n": n, "sentence": sentence, "selected_text": selected_text})
     print(results)
-    return {"suggest":results}
+
+    # 穴埋め後の文章を作成
+    suggest_sentence_list = [""] * n
+    result_list = [x.strip() for x in results.split(',')]
+    for i in range(n):
+        suggest_sentence_list[i] = sentence.replace("__", result_list[i])
+    return {"suggest":results, "suggest_sentence": suggest_sentence_list}
     
