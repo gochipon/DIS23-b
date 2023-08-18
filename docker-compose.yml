@@ -6,7 +6,7 @@ services:
     volumes:
       - ./front:/front
     build: ./front
-    command: ["yarn", "start"]
+    command: sh -c "yarn install && yarn start"
     ports:
       - ${PORT}:${PORT}
     stdin_open: true
