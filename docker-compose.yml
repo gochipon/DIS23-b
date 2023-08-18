@@ -19,5 +19,6 @@ services:
     build: ./api
     ports:
       - 50050:50050
-    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "50050", "--reload"]
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0",
+              "--port", "50050", "--reload", "--log-config", "./log.ini"]
     env_file: .env
