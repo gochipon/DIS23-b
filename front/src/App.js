@@ -2,12 +2,42 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import {
   AppBar,
+  Box,
+  Button,
+  Container,
   Paper,
+  TextField,
   Toolbar,
   Typography
 } from '@mui/material';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+
+import { alpha, styled, ThemeProvider, createTheme } from '@mui/material/styles'
+
+const QueryTextField = styled((props) => (
+  <TextField InputProps={{ disableUnderline: true }} {...props} />
+))(({ theme }) => ({
+  '& .MuiFilledInput-root': {
+    overflow: 'hidden',
+    borderRadius: 4,
+    backgroundColor: theme.palette.mode === 'light' ? '#F3F6F9' : '#1A2027',
+    border: '1px solid',
+    borderColor: theme.palette.mode === 'light' ? '#E0E3E7' : '#2D3843',
+    transition: theme.transitions.create([
+      'border-color',
+      'background-color',
+      'box-shadow',
+    ]),
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+    '&.Mui-focused': {
+      backgroundColor: 'transparent',
+      boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+      borderColor: theme.palette.primary.main,
+    },
+  },
+}));
 
 
 const CodeBlock = ({ code }) => {
@@ -121,15 +151,33 @@ function App() {
             </Typography>
           </Toolbar>
         </AppBar>
+        <main>
+          <Box
+            sx={{
+              bgcolor: 'background.paper',
+              pt: 8,
+              pb: 6,
+            }}
+          >
+            <Container maxWidth="lg">
+              <Typography variant="h6" color="inherit" noWrap>
+                質問文
+              </Typography>
+              <QueryTextField
+                fullWidth
+                variant="filled"
+                label="(200文字程度以内で入力してください)"
+                InputLabelProps={{ shrink: true }}
+                multiline
+                rows={4}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <Button variant="contained" align="right" sx={{my:1}}>質問文を送信</Button>
+            </Container>
+          </Box>
+        </main>
       </ThemeProvider>
-        <div>
-          <textarea
-            rows="4"
-            cols="100"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
         <div>
           <button onClick={handleQuerySubmit}>草稿を作成する</button>
         </div>
