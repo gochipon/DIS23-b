@@ -6,7 +6,12 @@ services:
     volumes:
       - ./front:/front
     build: ./front
-    tty: true
+    command: ["yarn", "start"]
+    ports:
+      - ${PORT}:${PORT}
+    stdin_open: true
+    env_file:
+    - .env
   api:
     container_name: "api"
     volumes:  
