@@ -8,10 +8,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from langchain.prompts import PromptTemplate
 from langchain.schema import HumanMessage, SystemMessage
+from pydantic import BaseModel
 
 app = FastAPI()
 
-origins = ["http://localhost:50018"]
+origins = ["http://localhost:50010"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -20,22 +21,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class QueryBody(BaseModel):
+    text:str
+
 @app.get("/")
 def read_root():
     print("Hello World")
     return {"Hello": "World"}
 
 @app.post("/query")
-def query(text: str) -> dict:
+def query(body: QueryBody) -> dict:
     logger = logging.getLogger('uvicorn')
-    logger.info(text)
+    logger.info(body)
     chat = ChatOpenAI(model_name="gpt-3.5-turbo")
     with get_openai_callback() as cb:
         result = chat(
-            [SystemMessage(content="日本語で回答してください。"), HumanMessage(content=text)]
+            [SystemMessage(content="日本語で回答してください。"), HumanMessage(content=body.text)]
         )
         logger.info(cb)
-
     logger.info(result)
     return {"output": result.content}
 
