@@ -7,6 +7,8 @@ function App() {
 
   const [query, setQuery] = useState('');
   const [draft, setDraft] = useState('');
+  const [selectedText, setSelectedText] = useState('');
+  const [maskedDraft, setMaskedDraft] = useState('');
 
   const handleQuerySubmit = async () => {
     try {
@@ -16,6 +18,21 @@ function App() {
       setDraft(response.data.output);
     } catch (error) {
       console.error("Error:", error);
+    }
+  };
+
+  const handleTextSelection = () => {
+    const selection = window.getSelection();
+    const text = selection.toString()
+    setSelectedText(text);
+
+    if (text.length > 0) {
+      const selectionStart = selection.anchorOffset;
+      const selectionEnd = selection.focusOffset;
+      const beforeSelection = draft.slice(0, selectionStart);
+      const afterSelection = draft.slice(selectionEnd);
+
+      setMaskedDraft(beforeSelection + "__" + afterSelection);
     }
   };
 
@@ -38,6 +55,7 @@ function App() {
 
         <h2>草稿の出力結果</h2>
         <div
+          onMouseUp={handleTextSelection}
           style={{
             border: '1px solid #ccc',
             padding: '10px',
@@ -49,6 +67,14 @@ function App() {
             {draft}
           </p>
         </div>
+        <p>
+          選択しているテキスト: <strong>{selectedText}</strong>
+        </p>
+        <p>
+          マスク: <strong>{maskedDraft}</strong>
+        </p>
+
+
       </header>
     </div>
   );
