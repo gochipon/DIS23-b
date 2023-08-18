@@ -42,7 +42,7 @@ const QueryTextField = styled((props) => (
 
 const CodeBlock = ({ code }) => {
   return (
-    <Paper sx={{backgroundColor: '#f0f0f0', overflowX: 'auto', mx: 40, my: 5, p: 5}}>
+    <Paper variant="outlined" sx={{backgroundColor: '#f0f0f0', overflowX: 'auto', m: 2, p: 2}}>
       <Typography variant="body2" component="pre">
         {code}
       </Typography>
@@ -223,8 +223,29 @@ function App() {
                   InputProps={{
                     readOnly: true,
                   }}
-                  sx={{mt:2, mb:3}}
+                  sx={{mt:2, mb:2}}
                 />
+              </Container>
+            </Paper>
+          </Box>
+          <Box
+            sx={{
+              bgcolor: 'background.paper',
+              mt: 4,
+            }}
+          >
+            <Paper
+              // variant="outlined"
+              sx={{
+                mx:30,
+                px:2,
+                py:2
+            }}>
+              <Container maxWidth="md">
+                <Typography variant="h6" color="inherit" noWrap>
+                  変更履歴
+                </Typography>
+                <CodeBlock code={historyListJson} />
               </Container>
             </Paper>
           </Box>
