@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function App() {
-  const queryUrl = "http://127.0.0.1:50050/query"; //後でfast apiのurl
+  const queryUrl = "http://127.0.0.1:50050/query";
   const suggestUrl = "http://127.0.0.1:50050/suggest";
 
   const [query, setQuery] = useState('');
@@ -11,7 +11,7 @@ function App() {
   const [beforeText, setBeforeText] = useState('');
   const [afterText, setAfterText] = useState('');
   const [maskedDraft, setMaskedDraft] = useState('');
-  const [suggests, setSuggests] = useState([])
+  const [suggests, setSuggests] = useState([]);
   const [selectedSuggest, setSelectedSuggest] = useState('');
 
   const handleQuerySubmit = async () => {
@@ -57,6 +57,7 @@ function App() {
 
   const handleButtonClick = (string) => {
     setSelectedSuggest(string);
+    setDraft(beforeText+string+afterText);
   };
 
   return (
@@ -107,6 +108,9 @@ function App() {
         <div>
           <p>選択された文字列: {selectedSuggest}</p>
         </div>
+
+        <h2>変更後の出力</h2>
+        <p>{beforeText}<strong>{selectedSuggest}</strong>{afterText}</p>
       </header>
     </div>
   );
