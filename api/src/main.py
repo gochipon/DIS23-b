@@ -1,5 +1,5 @@
 import logging
-import re
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +13,8 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-origins = ["http://localhost:50010"]
+PORT_FRONT = os.environ.get("PORT")
+origins = [f"http://localhost:{PORT_FRONT}"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
