@@ -26,6 +26,9 @@ $ docker compose exec front /bin/bash
 
 # api
 $ docker compose exec api /bin/bash
+
+# view logs
+$ cat api/logfile.log
 ```
 
 ## branch
