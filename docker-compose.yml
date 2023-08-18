@@ -9,9 +9,10 @@ services:
     tty: true
   api:
     container_name: "api"
-    volumes:
+    volumes:  
       - ./api:/api
     build: ./api
     ports:
-      - 8080:8080
-    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
+      - 50050:50050
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "50050", "--reload"]
+    env_file: .env
