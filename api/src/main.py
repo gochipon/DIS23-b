@@ -59,7 +59,7 @@ def suggest(body: SuggestBody) -> dict:
     input_template = """
         {draft}
         上記の文章の__の部分に入る言葉を{n}個出力してください。
-        出力は"{selected_text}"の類似したものが望ましい。
+        出力は"{selected_text}"の類似したものが望ましいが、完全一致の出力は除外してください。
         {format_instructions}
     """
     input_template_en = """
@@ -81,6 +81,12 @@ def suggest(body: SuggestBody) -> dict:
     result_list = output_parser.parse(results)
     logger.info(result_list)
 
+    # 重複を除去
+    for option in result_list:
+        if option == body.selected_text:
+            logger.info(f"remove option: {body.selected_text}")
+            result_list.remove(option)
+
     # draftの文章から__が含まれる文章を抽出
     sentences = body.draft.replace("。", "。\n").split("\n")
     sentences = [s.strip() for s in sentences if s.strip() != ""]
@@ -93,8 +99,9 @@ def suggest(body: SuggestBody) -> dict:
             break
 
     # 穴埋め後の文章を作成
-    suggest_sentence_list = [""] * body.n
-    for i in range(body.n):
+    result_num = len(result_list)
+    suggest_sentence_list = [""] * result_num
+    for i in range(result_num): 
         suggest_sentence_list[i] = part_draft.replace("__", result_list[i])
     logger.info("suggest_sentence_list:")
     logger.info(suggest_sentence_list)
