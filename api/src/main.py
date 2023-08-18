@@ -39,7 +39,7 @@ def query(text: str) -> dict:
     logger.info(result)
     return {"output": result.content}
 
-@app.post("/suggest")
+@app.get("/suggest")
 def suggest(selected_text: str="訓練", sentence: str="ITの利活用には、__が必要です。", n:int=3):
     logger = logging.getLogger('uvicorn')
     
