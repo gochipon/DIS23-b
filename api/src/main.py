@@ -81,6 +81,12 @@ def suggest(body: SuggestBody) -> dict:
     result_list = output_parser.parse(results)
     logger.info(result_list)
 
+    # 重複を除去
+    for option in result_list:
+        if option == body.selected_text:
+            logger.info(f"remove option: {body.selected_text}")
+            result_list.remove(option)
+
     # draftの文章から__が含まれる文章を抽出
     sentences = body.draft.replace("。", "。\n").split("\n")
     sentences = [s.strip() for s in sentences if s.strip() != ""]
