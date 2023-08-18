@@ -27,14 +27,16 @@ def read_root():
 
 @app.post("/query")
 def query(text: str) -> dict:
-    print(text)
+    logger = logging.getLogger('uvicorn')
+    logger.info(text)
     chat = ChatOpenAI(model_name="gpt-3.5-turbo")
-    
-    result = chat([
-        SystemMessage(content="日本語で回答してください。"),
-        HumanMessage(content=text),
-    ])
-    print(result)
+    with get_openai_callback() as cb:
+        result = chat(
+            [SystemMessage(content="日本語で回答してください。"), HumanMessage(content=text)]
+        )
+        logger.info(cb)
+
+    logger.info(result)
     return {"output": result.content}
 
 @app.post("/suggest")
