@@ -21,3 +21,9 @@ $ docker compose exec front /bin/bash
 # api
 $ docker compose exec api /bin/bash
 ```
+
+## branch
+- issueドリブンを採用
+    - 例: #5_install_fastapi
+- 参考
+    - https://qiita.com/takahirocook/items/6ac94e5dc6536bd2272c
