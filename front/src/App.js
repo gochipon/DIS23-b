@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Paper, Typography} from '@mui/material';
-// import { styled } from '@mui/material/styles';
+import {
+  AppBar,
+  Paper,
+  Toolbar,
+  Typography
+} from '@mui/material';
+
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 
 const CodeBlock = ({ code }) => {
@@ -15,6 +21,25 @@ const CodeBlock = ({ code }) => {
 };
 
 function App() {
+  // For global theme
+  const theme = createTheme({
+    palette: {
+      primary: {
+        light: '#757ce8',
+        main: '#3f50b5',
+        dark: '#002884',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '#ff7961',
+        main: '#f44336',
+        dark: '#ba000d',
+        contrastText: '#000',
+      },
+    },
+  });
+
+
   const queryUrl = "http://127.0.0.1:50050/query";
   const suggestUrl = "http://127.0.0.1:50050/suggest";
 
@@ -87,9 +112,16 @@ function App() {
 
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>App</h1>
+    <>
+      <ThemeProvider theme={theme}>
+        <AppBar position="relative">
+          <Toolbar>
+            <Typography variant="h6" color="inherit" noWrap>
+              サービス名
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </ThemeProvider>
         <div>
           <textarea
             rows="4"
@@ -142,8 +174,7 @@ function App() {
           <h2>JSON Code Block Example</h2>
           <CodeBlock code={historyListJson} />
         </div>
-      </header>
-    </div>
+    </>
   );
 }
 
