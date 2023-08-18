@@ -62,6 +62,12 @@ def suggest(body: SuggestBody) -> dict:
         出力は"{selected_text}"の類似したものが望ましい。
         {format_instructions}
     """
+    input_template_en = """
+        {draft}
+        Output {n} words that go into the __ part of the above sentence.
+        Output should be similar to "{selected_text}".
+        {format_instructions}
+    """
     prompt = PromptTemplate(
         template=input_template,
         input_variables=["n", "draft", "selected_text"],
