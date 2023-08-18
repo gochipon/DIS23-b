@@ -155,32 +155,81 @@ function App() {
           <Box
             sx={{
               bgcolor: 'background.paper',
-              pt: 8,
-              pb: 6,
+              pt: 4,
+              pb: 4,
             }}
           >
-            <Container maxWidth="lg">
-              <Typography variant="h6" color="inherit" noWrap>
-                質問文
-              </Typography>
-              <QueryTextField
-                fullWidth
-                variant="filled"
-                label="(200文字程度以内で入力してください)"
-                InputLabelProps={{ shrink: true }}
-                multiline
-                rows={4}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <Button variant="contained" align="right" sx={{my:1}}>質問文を送信</Button>
-            </Container>
+            <Paper
+              // variant="outlined"
+              sx={{
+                mx:30,
+                px:2,
+                py:2
+            }}>
+              <Container maxWidth="md">
+                <Typography variant="h6" color="inherit" noWrap>
+                  質問文
+                </Typography>
+                <QueryTextField
+                  fullWidth
+                  variant="filled"
+                  label="(200文字程度以内で入力してください)"
+                  InputLabelProps={{ shrink: true }}
+                  multiline
+                  rows={4}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  sx={{mt:2}}
+                />
+                <Button
+                  variant="contained"
+                  align="right"
+                  sx={{my:1}}
+                  onClick={handleQuerySubmit}
+                >
+                    質問文を送信
+                </Button>
+              </Container>
+            </Paper>
+          </Box>
+
+          <Box
+            sx={{
+              bgcolor: 'background.paper',
+              pt: 2,
+            }}
+          >
+            <Paper
+              // variant="outlined"
+              sx={{
+                mx:30,
+                px:2,
+                py:2
+            }}>
+              <Container maxWidth="md">
+                <Typography variant="h6" color="inherit" noWrap>
+                  出力結果
+                </Typography>
+                <TextField
+                  label=""
+                  variant="outlined"
+                  color="grey"
+                  value={draft}
+                  fullWidth
+                  multiline
+                  minrows={10}
+                  rows={10}
+                  focused
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  sx={{mt:2, mb:3}}
+                />
+              </Container>
+            </Paper>
           </Box>
         </main>
       </ThemeProvider>
-        <div>
-          <button onClick={handleQuerySubmit}>草稿を作成する</button>
-        </div>
 
         <h2>草稿の出力結果</h2>
         <div
