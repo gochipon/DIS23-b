@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Paper, Typography} from '@mui/material';
+// import { styled } from '@mui/material/styles';
+
+
+const CodeBlock = ({ code }) => {
+  return (
+    <Paper sx={{backgroundColor: '#f0f0f0', overflowX: 'auto', mx: 40, my: 5, p: 5}}>
+      <Typography variant="body2" component="pre">
+        {code}
+      </Typography>
+    </Paper>
+  );
+};
 
 function App() {
   const queryUrl = "http://127.0.0.1:50050/query";
@@ -13,6 +26,8 @@ function App() {
   const [maskedDraft, setMaskedDraft] = useState('');
   const [suggests, setSuggests] = useState([]);
   const [selectedSuggest, setSelectedSuggest] = useState('');
+  const [historyList, setHistoryList] = useState([]);
+  const [historyListJson, setHistoryListJson] = useState(JSON.stringify([], null, 2));
 
   const handleQuerySubmit = async () => {
     try {
@@ -58,7 +73,18 @@ function App() {
   const handleButtonClick = (string) => {
     setSelectedSuggest(string);
     setDraft(beforeText+string+afterText);
+    const history = {
+      "before" : selectedText,
+      "after" : string,
+      "suggests" : suggests
+    };
+    const historyListTmp = historyList;
+    historyListTmp.push(history);
+    console.log(historyListTmp);
+    setHistoryList(historyListTmp);
+    setHistoryListJson(JSON.stringify(historyListTmp, null, 2))
   };
+
 
   return (
     <div className="App">
@@ -111,6 +137,11 @@ function App() {
 
         <h2>変更後の出力</h2>
         <p>{beforeText}<strong>{selectedSuggest}</strong>{afterText}</p>
+
+        <div>
+          <h2>JSON Code Block Example</h2>
+          <CodeBlock code={historyListJson} />
+        </div>
       </header>
     </div>
   );
