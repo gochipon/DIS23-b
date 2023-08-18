@@ -59,7 +59,7 @@ def suggest(body: SuggestBody) -> dict:
     input_template = """
         {draft}
         上記の文章の__の部分に入る言葉を{n}個出力してください。
-        出力は{selected_text}の類語が望ましい。
+        出力は"{selected_text}"の類似したものが望ましい。
         {format_instructions}
     """
     prompt = PromptTemplate(
