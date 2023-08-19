@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import axios from 'axios';
 import {
   AppBar,
   Box,
   Button,
   Container,
+  Menu,
+  MenuItem,
   Paper,
   TextField,
   Toolbar,
@@ -84,6 +86,11 @@ function App() {
   const [historyList, setHistoryList] = useState([]);
   const [historyListJson, setHistoryListJson] = useState(JSON.stringify([], null, 2));
 
+  // For menu
+  const [selectionEnd, setSelectionEnd] = useState(0);
+  const textareaRef = useRef();
+  const [contextMenu, setContextMenu] = useState(null);
+
   const handleQuerySubmit = async () => {
     try {
       const response = await axios.post(queryUrl, {
@@ -94,6 +101,68 @@ function App() {
       console.error("Error:", error);
     }
   };
+
+
+  const handleContextMenu = async (event) => {
+    event.preventDefault();
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+    );
+    const selectionStart = textareaRef.current.selectionStart;
+    const selectionEnd = textareaRef.current.selectionEnd;
+    const text = draft.slice(selectionStart, selectionEnd);
+    if (text.length > 0){
+      const maskedDraft = `${draft.substring(
+        0,
+        selectionStart
+      )}__${draft.substring(selectionEnd, draft.length)}`;
+
+      try {
+        const response = await axios.post(suggestUrl, {
+          selected_text: text,
+          draft: maskedDraft,
+          n: 3
+        });
+        setSelectedText(text);
+        setSuggests(response.data.suggest);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+
+  const insertText = (text) => () => {
+    const selectionStart = textareaRef.current.selectionStart;
+    const selectionEnd = textareaRef.current.selectionEnd;
+    const insertText = ` {{${text}}} `;
+
+    setSelectionEnd(selectionEnd + insertText.length);
+
+    const newDraft = `${draft.substring(
+      0,
+      selectionStart
+    )}${insertText}${draft.substring(selectionEnd, draft.length)}`;
+
+    setDraft(newDraft);
+    handleClose();
+  };
+
+  useLayoutEffect(() => {
+    //Sets the cursor at the end of inserted text
+    textareaRef.current.selectionEnd = selectionEnd;
+  }, [selectionEnd]);
 
   const handleTextSelection = () => {
     const selection = window.getSelection();
@@ -210,21 +279,37 @@ function App() {
                 <Typography variant="h6" color="inherit" noWrap>
                   出力結果
                 </Typography>
-                <TextField
-                  label=""
-                  variant="outlined"
-                  color="grey"
-                  value={draft}
-                  fullWidth
-                  multiline
-                  minrows={10}
-                  rows={10}
-                  focused
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  sx={{mt:2, mb:2}}
-                />
+                <Box onContextMenu={handleContextMenu}>
+                  <TextField
+                    label=""
+                    variant="outlined"
+                    color="grey"
+                    value={draft}
+                    fullWidth
+                    multiline
+                    minrows={10}
+                    rows={10}
+                    focused
+                    inputRef={textareaRef}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{mt:2, mb:2}}
+                  />
+                  <Menu
+                    open={contextMenu !== null}
+                    onClose={handleClose}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                      contextMenu !== null
+                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                        : undefined
+                    }
+                  >
+                    <MenuItem onClick={insertText("VarA")}>VarA</MenuItem>
+                    <MenuItem onClick={insertText("VarB")}>VarB</MenuItem>
+                  </Menu>
+                </Box>
               </Container>
             </Paper>
           </Box>
