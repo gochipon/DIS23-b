@@ -78,9 +78,6 @@ function App() {
   const [query, setQuery] = useState('');
   const [draft, setDraft] = useState('');
   const [selectedText, setSelectedText] = useState('');
-  const [beforeText, setBeforeText] = useState('');
-  const [afterText, setAfterText] = useState('');
-  const [maskedDraft, setMaskedDraft] = useState('');
   const [suggests, setSuggests] = useState([]);
   const [selectedSuggest, setSelectedSuggest] = useState('');
   const [historyList, setHistoryList] = useState([]);
@@ -143,60 +140,24 @@ function App() {
     setContextMenu(null);
   };
 
-  const insertText = (text) => () => {
-    const selectionStart = textareaRef.current.selectionStart;
-    const selectionEnd = textareaRef.current.selectionEnd;
-    const insertText = ` {{${text}}} `;
-
-    setSelectionEnd(selectionEnd + insertText.length);
-
-    const newDraft = `${draft.substring(
-      0,
-      selectionStart
-    )}${insertText}${draft.substring(selectionEnd, draft.length)}`;
-
-    setDraft(newDraft);
-    handleClose();
-  };
 
   useLayoutEffect(() => {
     //Sets the cursor at the end of inserted text
     textareaRef.current.selectionEnd = selectionEnd;
   }, [selectionEnd]);
 
-  const handleTextSelection = () => {
-    const selection = window.getSelection();
-    const text = selection.toString()
-
-    if (text.length > 0) {
-      const selectionStart = selection.anchorOffset;
-      const selectionEnd = selection.focusOffset;
-      const beforeTextTmp = draft.slice(0, selectionStart);
-      const afterTextTmp = draft.slice(selectionEnd);
-
-      setSelectedText(text);
-      setBeforeText(beforeTextTmp);
-      setAfterText(afterTextTmp);
-      setMaskedDraft(beforeTextTmp + "__" + afterTextTmp);
-    }
-  };
-
-  const handleSelectedTextSubmit = async () => {
-    try {
-      const response = await axios.post(suggestUrl, {
-        selected_text: selectedText,
-        draft: maskedDraft,
-        n: 3
-      });
-      setSuggests(response.data.suggest);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
 
   const handleButtonClick = (string) => {
+    const selectionStart = textareaRef.current.selectionStart;
+    const selectionEnd = textareaRef.current.selectionEnd;
+
+    const newDraft = `${draft.substring(
+      0,
+      selectionStart
+    )}${string}${draft.substring(selectionEnd, draft.length)}`;
+
     setSelectedSuggest(string);
-    setDraft(beforeText+string+afterText);
+    setDraft(newDraft);
     const history = {
       "before" : selectedText,
       "after" : string,
@@ -206,7 +167,8 @@ function App() {
     historyListTmp.push(history);
     console.log(historyListTmp);
     setHistoryList(historyListTmp);
-    setHistoryListJson(JSON.stringify(historyListTmp, null, 2))
+    setHistoryListJson(JSON.stringify(historyListTmp, null, 2));
+    handleClose();
   };
 
 
@@ -306,8 +268,11 @@ function App() {
                         : undefined
                     }
                   >
-                    <MenuItem onClick={insertText("VarA")}>VarA</MenuItem>
-                    <MenuItem onClick={insertText("VarB")}>VarB</MenuItem>
+                    {suggests.map((string, index) => (
+                      <MenuItem key={index} onClick={() => handleButtonClick(string)}>
+                        {string}
+                      </MenuItem>
+                    ))}
                   </Menu>
                 </Box>
               </Container>
@@ -336,47 +301,6 @@ function App() {
           </Box>
         </main>
       </ThemeProvider>
-
-        <h2>草稿の出力結果</h2>
-        <div
-          onMouseUp={handleTextSelection}
-          style={{
-            border: '1px solid #ccc',
-            padding: '10px',
-            width: '1000px',
-            lineHeight: '1.5',
-          }}
-        >
-          <p>
-            {draft}
-          </p>
-        </div>
-        <p>
-          選択しているテキスト: <strong>{selectedText}</strong>
-        </p>
-        <div>
-          <button onClick={handleSelectedTextSubmit}>送信</button>
-        </div>
-
-        <h2>与えられた選択肢</h2>
-        <div>
-          {suggests.map((string, index) => (
-            <button key={index} onClick={() => handleButtonClick(string)}>
-              {string}
-            </button>
-          ))}
-        </div>
-        <div>
-          <p>選択された文字列: {selectedSuggest}</p>
-        </div>
-
-        <h2>変更後の出力</h2>
-        <p>{beforeText}<strong>{selectedSuggest}</strong>{afterText}</p>
-
-        <div>
-          <h2>JSON Code Block Example</h2>
-          <CodeBlock code={historyListJson} />
-        </div>
     </>
   );
 }
