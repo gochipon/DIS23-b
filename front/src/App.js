@@ -104,8 +104,8 @@ function App() {
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6
+            mouseX: event.clientX,
+            mouseY: event.clientY + 10
           }
         : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
           // Other native context menus might behave different.
@@ -203,7 +203,7 @@ function App() {
                 <QueryTextField
                   fullWidth
                   variant="filled"
-                  label="(200文字程度以内で入力してください)"
+                  label="ここに入力してください"
                   InputLabelProps={{ shrink: true }}
                   multiline
                   rows={4}
