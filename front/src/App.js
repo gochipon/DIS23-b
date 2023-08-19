@@ -70,10 +70,9 @@ function App() {
       },
     },
   });
-
-
-  const queryUrl = "http://127.0.0.1:50050/query";
-  const suggestUrl = "http://127.0.0.1:50050/suggest";
+  
+  const queryUrl = "http://127.0.0.1:50050/query"; //TODO: .envから取得
+  const suggestUrl = "http://127.0.0.1:50050/suggest"; //TODO: .envから取得
 
   const [query, setQuery] = useState('');
   const [draft, setDraft] = useState('');
