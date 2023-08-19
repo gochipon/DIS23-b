@@ -1,6 +1,8 @@
 # DIS23-b
 Data Intern Summer 2023 Team B
 
+# らしさ
+
 ## Setup
 ```bash
 $ git clone https://github.com/gochipon/DIS23-b

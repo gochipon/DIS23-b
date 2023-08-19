@@ -125,7 +125,7 @@ function App() {
         const response = await axios.post(suggestUrl, {
           selected_text: text,
           draft: maskedDraft,
-          n: 3
+          n: 10
         });
         setSelectedText(text);
         setSuggests(response.data.suggest);
